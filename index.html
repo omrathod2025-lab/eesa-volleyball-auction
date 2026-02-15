@@ -120,7 +120,6 @@ let teams = {
     "Team Shailesh": { purse: purseLimit, players: [] }
 };
 
-// 🔥 ADD ALL PLAYERS HERE
 let players = [
 
     {name:"Aditya Jadhav", year:"TY", role:"Spiker"},
@@ -142,40 +141,43 @@ let players = [
 
 let sets = ["Libero","Setter","Spiker","All-Rounder"];
 let currentSetIndex = 0;
-let currentPlayerIndex = -1;
+let currentPlayerIndex = 0;
 let currentSetPlayers = [];
 
-function startSet() {
+// Initialize first set on first click
+function initializeIfNeeded() {
+    if (currentSetPlayers.length === 0) {
+        loadNextSet();
+    }
+}
+
+function loadNextSet() {
 
     if(currentSetIndex >= sets.length) {
-        document.getElementById("currentPlayer").innerHTML = "Auction Completed";
-        return;
+        document.getElementById("currentPlayer").innerHTML = "<h2>Auction Completed</h2>";
+        return false;
     }
 
     let role = sets[currentSetIndex];
     document.getElementById("setName").innerHTML = "Current Set: " + role;
 
     currentSetPlayers = players.filter(p => p.role === role);
-    currentPlayerIndex = -1;
+    currentPlayerIndex = 0;
+
+    if(currentSetPlayers.length === 0) {
+        currentSetIndex++;
+        return loadNextSet();
+    }
+
+    return true;
 }
 
-function nextPlayer() {
+function showPlayer() {
 
-    if(currentSetPlayers.length === 0) startSet();
-
-    currentPlayerIndex++;
-
-    if(currentPlayerIndex >= currentSetPlayers.length) {
-        currentSetIndex++;
-        startSet();
-        nextPlayer();
-        return;
-    }
+    if(currentSetIndex >= sets.length) return;
 
     let p = currentSetPlayers[currentPlayerIndex];
     let base = (p.year === "FY") ? 1 : 2;
-
-    // AUTO PHOTO GENERATION
     let imageFile = p.name.replace(/ /g, "_") + ".jpg";
 
     document.getElementById("currentPlayer").innerHTML =
@@ -184,6 +186,12 @@ function nextPlayer() {
         "<p><b>Role:</b> " + p.role + "</p>" +
         "<p><b>Year:</b> " + p.year + "</p>" +
         "<p><b>Base Price:</b> " + base + " Cr</p>";
+}
+
+function nextPlayer() {
+
+    initializeIfNeeded();
+    showPlayer();
 }
 
 function sellPlayer() {
@@ -201,9 +209,34 @@ function sellPlayer() {
     team.players.push(player.name + " (" + bid + " Cr)");
     updateTeams();
 
-    nextPlayer();
+    currentPlayerIndex++;
+
+    if(currentPlayerIndex >= currentSetPlayers.length) {
+        currentSetIndex++;
+        currentSetPlayers = [];
+    }
+
+    showNextAutomatically();
+}
+
+function showNextAutomatically() {
+    if(loadNextSet()) {
+        showPlayer();
+    }
 }
 
 function updateTeams() {
     for(let t in teams) {
         document.getElementById(t).innerHTML =
+            "<h3>" + t + "</h3>" +
+            "<p>Purse: " + teams[t].purse.toFixed(1) + " Cr</p>" +
+            teams[t].players.join("<br>");
+    }
+}
+
+updateTeams();
+
+</script>
+
+</body>
+</html>
