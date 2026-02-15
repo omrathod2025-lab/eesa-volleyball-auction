@@ -5,14 +5,39 @@
 
 <style>
 body {
-    font-family: Arial;
+    font-family: Arial, sans-serif;
     background: #0f172a;
     color: white;
     text-align: center;
+    margin: 0;
 }
 
 h1 {
-    font-size: 40px;
+    font-size: 42px;
+    margin-top: 20px;
+}
+
+.set-display {
+    font-size: 22px;
+    color: #38bdf8;
+    margin-bottom: 10px;
+}
+
+.player-card {
+    background: #1e293b;
+    width: 420px;
+    margin: 20px auto;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+.player-card img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin-bottom: 15px;
 }
 
 .section {
@@ -24,9 +49,15 @@ button {
     font-size: 16px;
     margin: 5px;
     cursor: pointer;
+    border-radius: 8px;
+    border: none;
 }
 
-select, input {
+button:hover {
+    opacity: 0.9;
+}
+
+input, select {
     padding: 8px;
     font-size: 15px;
     margin: 5px;
@@ -35,36 +66,14 @@ select, input {
 .container {
     display: flex;
     justify-content: space-around;
-    margin-top: 20px;
+    margin: 30px;
 }
 
 .team {
     background: #1e293b;
-    padding: 15px;
     width: 23%;
+    padding: 15px;
     border-radius: 12px;
-}
-
-.player-card {
-    background: #1e293b;
-    padding: 20px;
-    border-radius: 15px;
-    margin: 20px auto;
-    width: 40%;
-}
-
-.player-card img {
-    width: 180px;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 15px;
-    margin-bottom: 10px;
-}
-
-.set-display {
-    font-size: 22px;
-    margin-top: 10px;
-    color: #38bdf8;
 }
 </style>
 </head>
@@ -111,25 +120,23 @@ let teams = {
     "Team Shailesh": { purse: purseLimit, players: [] }
 };
 
-// 🔥 ADD ALL YOUR PLAYERS HERE
+// 🔥 ADD ALL PLAYERS HERE
 let players = [
 
-    {name:"Rushikesh Patil", year:"BTECH", role:"Spiker"},
-    {name:"Shrivardhan Deshmukh", year:"TY", role:"Libero"},
-    {name:"Pushkar Joshi", year:"FY", role:"Setter"},
-    {name:"MAYUR BADGUJAR", year:"FY", role:"Setter"},
-    {name:"Navne Amar Maharudra", year:"SY", role:"All-Rounder"},
-    {name:"Kevin Pooniwala", year:"TY", role:"Spiker"},
+    {name:"Aditya Jadhav", year:"TY", role:"Spiker"},
+    {name:"Aditya Thakur", year:"FY", role:"Setter"},
+    {name:"Advay Saraf", year:"SY", role:"Libero"},
+    {name:"Adwait Deshpande", year:"FY", role:"All-Rounder"},
+    {name:"Amar Navne", year:"SY", role:"Spiker"},
+    {name:"Aniket Mhetar", year:"SY", role:"Setter"},
+    {name:"Aniruddh Nalli", year:"BTECH", role:"Libero"},
+    {name:"Arnav Ghatandrekarr", year:"FY", role:"Spiker"},
+    {name:"Avinash Bhadange", year:"MTECH", role:"All-Rounder"},
     {name:"Bhavesh Shah", year:"FY", role:"Libero"},
     {name:"Daksh Kotak", year:"FY", role:"Libero"},
-    {name:"Sarthak Gawde", year:"SY", role:"Setter"},
-    {name:"Aditya Jadhav", year:"TY", role:"Spiker"},
-    {name:"Ian Dias", year:"TY", role:"Spiker"},
-    {name:"Navinkumar Khanande", year:"SY", role:"Spiker"},
-    {name:"Shailesh Shikarkhane", year:"SY", role:"All-Rounder"},
-    {name:"Advay Saraf", year:"SY", role:"Libero"},
-    {name:"Omkar Majge", year:"TY", role:"All-Rounder"},
-    {name:"Gaurav Yadav", year:"TY", role:"Libero"}
+    {name:"Kartik Kendre", year:"SY", role:"Spiker"},
+    {name:"Mayur Badgujar", year:"FY", role:"Setter"},
+    {name:"Om Jaiswal", year:"BTECH", role:"All-Rounder"}
 
 ];
 
@@ -168,15 +175,15 @@ function nextPlayer() {
     let p = currentSetPlayers[currentPlayerIndex];
     let base = (p.year === "FY") ? 1 : 2;
 
-    // 🔥 Automatic image generation
+    // AUTO PHOTO GENERATION
     let imageFile = p.name.replace(/ /g, "_") + ".jpg";
 
     document.getElementById("currentPlayer").innerHTML =
-        "<img src='images/" + imageFile + "' onerror=\"this.src='https://via.placeholder.com/180';\">" +
+        "<img src='images/" + imageFile + "' onerror=\"this.src='https://via.placeholder.com/200';\">" +
         "<h2>" + p.name + "</h2>" +
-        "<p>Role: " + p.role + "</p>" +
-        "<p>Year: " + p.year + "</p>" +
-        "<p>Base Price: " + base + " Cr</p>";
+        "<p><b>Role:</b> " + p.role + "</p>" +
+        "<p><b>Year:</b> " + p.year + "</p>" +
+        "<p><b>Base Price:</b> " + base + " Cr</p>";
 }
 
 function sellPlayer() {
@@ -200,16 +207,3 @@ function sellPlayer() {
 function updateTeams() {
     for(let t in teams) {
         document.getElementById(t).innerHTML =
-            "<h3>" + t + "</h3>" +
-            "<p>Purse: " + teams[t].purse.toFixed(1) + " Cr</p>" +
-            teams[t].players.join("<br>");
-    }
-}
-
-updateTeams();
-startSet();
-
-</script>
-
-</body>
-</html>
