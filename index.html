@@ -12,9 +12,7 @@ body {
 
 h1 { font-size: 40px; }
 
-.section {
-    margin: 20px;
-}
+.section { margin: 20px; }
 
 button {
     padding: 10px 20px;
@@ -39,15 +37,23 @@ select, input {
     background: #1e293b;
     padding: 15px;
     width: 23%;
-    border-radius: 10px;
+    border-radius: 12px;
 }
 
 .player-card {
     background: #1e293b;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 15px;
     margin: 20px auto;
     width: 40%;
+}
+
+.player-card img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin-bottom: 10px;
 }
 
 .set-display {
@@ -64,7 +70,7 @@ select, input {
 <div class="set-display" id="setName"></div>
 
 <div class="player-card" id="currentPlayer">
-    Waiting to Start Auction
+    Click Next Player to Start
 </div>
 
 <div class="section">
@@ -99,22 +105,21 @@ let teams = {
 };
 
 let players = [
-    {name:"Shrivardhan Deshmukh", year:"TY", role:"Libero"},
-    {name:"Pushkar Joshi", year:"FY", role:"Setter"},
-    {name:"MAYUR BADGUJAR", year:"FY", role:"Setter"},
-    {name:"Navne Amar Maharudra", year:"SY", role:"All-Rounder"},
-    {name:"Swayam Kitukale", year:"FY", role:"All-Rounder"},
-    {name:"Kevin Pooniwala", year:"TY", role:"Spiker"},
-    {name:"Bhavesh Shah", year:"FY", role:"Libero"},
-    {name:"Daksh Kotak", year:"FY", role:"Libero"},
-    {name:"Sarthak Gawde", year:"SY", role:"Setter"},
-    {name:"Aditya Jadhav", year:"TY", role:"Spiker"},
-    {name:"Ian Dias", year:"TY", role:"Spiker"},
-    {name:"Navinkumar Khanande", year:"SY", role:"Spiker"},
-    {name:"Shailesh Shikarkhane", year:"SY", role:"All-Rounder"},
-    {name:"Advay Saraf", year:"SY", role:"Libero"},
-    {name:"Omkar Majge", year:"TY", role:"All-Rounder"},
-    {name:"Gaurav Yadav", year:"TY", role:"Libero"}
+
+    {
+        name:"Rushikesh Patil",
+        year:"BTECH",
+        role:"Spiker",
+        image:"Rushikesh_Patil_Btech_EE.jpg"
+    },
+
+    {
+        name:"Shrivardhan Deshmukh",
+        year:"TY",
+        role:"Libero",
+        image:"shrivardhan.jpg"
+    }
+
 ];
 
 let sets = ["Libero","Setter","Spiker","All-Rounder"];
@@ -123,6 +128,7 @@ let currentPlayerIndex = -1;
 let currentSetPlayers = [];
 
 function startSet() {
+
     if(currentSetIndex >= sets.length) {
         document.getElementById("currentPlayer").innerHTML = "Auction Completed";
         return;
@@ -136,6 +142,7 @@ function startSet() {
 }
 
 function nextPlayer() {
+
     if(currentSetPlayers.length === 0) startSet();
 
     currentPlayerIndex++;
@@ -151,6 +158,7 @@ function nextPlayer() {
     let base = (p.year === "FY") ? 1 : 2;
 
     document.getElementById("currentPlayer").innerHTML =
+        "<img src='images/" + p.image + "' onerror=\"this.src='https://via.placeholder.com/180';\">" +
         "<h2>" + p.name + "</h2>" +
         "<p>Role: " + p.role + "</p>" +
         "<p>Year: " + p.year + "</p>" +
@@ -158,6 +166,7 @@ function nextPlayer() {
 }
 
 function sellPlayer() {
+
     let bid = parseFloat(document.getElementById("bidAmount").value);
     let teamName = document.getElementById("teamSelect").value;
     let team = teams[teamName];
