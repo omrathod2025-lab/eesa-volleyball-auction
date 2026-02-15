@@ -1,260 +1,189 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Volleyball Auction System</title>
+<title>EESA Volleyball Auction</title>
 <style>
-body { font-family: Arial; background:#111; color:white; text-align:center; }
-.container { display:flex; justify-content:space-around; margin-top:20px; }
-.team { border:2px solid white; padding:10px; width:22%; border-radius:10px; }
-button { padding:5px 10px; margin:5px; cursor:pointer; }
-input, select { padding:5px; margin:5px; }
-.player { border:1px solid gray; margin:5px; padding:5px; }
+body {
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+}
+
+h1 { font-size: 40px; }
+
+.section {
+    margin: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+select, input {
+    padding: 8px;
+    font-size: 15px;
+    margin: 5px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.team {
+    background: #1e293b;
+    padding: 15px;
+    width: 23%;
+    border-radius: 10px;
+}
+
+.player-card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px auto;
+    width: 40%;
+}
+
+.set-display {
+    font-size: 22px;
+    margin-top: 10px;
+    color: #38bdf8;
+}
 </style>
 </head>
 <body>
 
 <h1>🏐 EESA Volleyball Auction</h1>
 
-<h2>Add Player</h2>
-<input id="playerName" placeholder="Player Name">
-<input id="basePrice" type="number" placeholder="Base Price">
-<select id="category">
-<option>Attacker</option>
-<option>Setter</option>
-<option>Libero</option>
-<option>All-Rounder</option>
-</select>
-<button onclick="addPlayer()">Add Player</button>
+<div class="set-display" id="setName"></div>
 
-<h2>Players List</h2>
-<div id="players"></div>
+<div class="player-card" id="currentPlayer">
+    Waiting to Start Auction
+</div>
 
-<h2>Auction Panel</h2>
-<select id="auctionPlayer"></select>
-<input id="bidAmount" type="number" placeholder="Bid Amount">
-<select id="teamSelect">
-<option>Team A</option>
-<option>Team B</option>
-<option>Team C</option>
-<option>Team D</option>
-</select>
-<button onclick="sellPlayer()">Sell Player</button>
+<div class="section">
+    <button onclick="nextPlayer()">Next Player</button><br>
+    <input type="number" id="bidAmount" placeholder="Enter Bid (Cr)">
+    <select id="teamSelect">
+        <option>Team Ian</option>
+        <option>Team Navin</option>
+        <option>Team Kevin</option>
+        <option>Team Shailesh</option>
+    </select>
+    <button onclick="sellPlayer()">SOLD</button>
+</div>
 
 <h2>Teams</h2>
 <div class="container">
-<div class="team" id="Team A"></div>
-<div class="team" id="Team B"></div>
-<div class="team" id="Team C"></div>
-<div class="team" id="Team D"></div>
+    <div class="team" id="Team Ian"></div>
+    <div class="team" id="Team Navin"></div>
+    <div class="team" id="Team Kevin"></div>
+    <div class="team" id="Team Shailesh"></div>
 </div>
 
 <script>
 
-let maxPlayers = 8;
-let purseLimit = 20000;
+let purseLimit = 60;
 
 let teams = {
-"Team A": { purse: purseLimit, players: [] },
-"Team B": { purse: purseLimit, players: [] },
-"Team C": { purse: purseLimit, players: [] },
-"Team D": { purse: purseLimit, players: [] }
+    "Team Ian": { purse: purseLimit, players: [] },
+    "Team Navin": { purse: purseLimit, players: [] },
+    "Team Kevin": { purse: purseLimit, players: [] },
+    "Team Shailesh": { purse: purseLimit, players: [] }
 };
 
-let players = [];
+let players = [
+    {name:"Shrivardhan Deshmukh", year:"TY", role:"Libero"},
+    {name:"Pushkar Joshi", year:"FY", role:"Setter"},
+    {name:"MAYUR BADGUJAR", year:"FY", role:"Setter"},
+    {name:"Navne Amar Maharudra", year:"SY", role:"All-Rounder"},
+    {name:"Swayam Kitukale", year:"FY", role:"All-Rounder"},
+    {name:"Kevin Pooniwala", year:"TY", role:"Spiker"},
+    {name:"Bhavesh Shah", year:"FY", role:"Libero"},
+    {name:"Daksh Kotak", year:"FY", role:"Libero"},
+    {name:"Sarthak Gawde", year:"SY", role:"Setter"},
+    {name:"Aditya Jadhav", year:"TY", role:"Spiker"},
+    {name:"Ian Dias", year:"TY", role:"Spiker"},
+    {name:"Navinkumar Khanande", year:"SY", role:"Spiker"},
+    {name:"Shailesh Shikarkhane", year:"SY", role:"All-Rounder"},
+    {name:"Advay Saraf", year:"SY", role:"Libero"},
+    {name:"Omkar Majge", year:"TY", role:"All-Rounder"},
+    {name:"Gaurav Yadav", year:"TY", role:"Libero"}
+];
 
-function addPlayer() {
-let name = document.getElementById("playerName").value;
-let base = parseInt(document.getElementById("basePrice").value);
-let cat = document.getElementById("category").value;
+let sets = ["Libero","Setter","Spiker","All-Rounder"];
+let currentSetIndex = 0;
+let currentPlayerIndex = -1;
+let currentSetPlayers = [];
 
-if(!name || !base) return alert("Fill all details");
+function startSet() {
+    if(currentSetIndex >= sets.length) {
+        document.getElementById("currentPlayer").innerHTML = "Auction Completed";
+        return;
+    }
 
-players.push({ name, base, cat, sold:false });
-updatePlayers();
-updateAuctionList();
+    let role = sets[currentSetIndex];
+    document.getElementById("setName").innerHTML = "Current Set: " + role;
+
+    currentSetPlayers = players.filter(p => p.role === role);
+    currentPlayerIndex = -1;
 }
 
-function updatePlayers() {
-let div = document.getElementById("players");
-div.innerHTML = "";
-players.forEach(p=>{
-div.innerHTML += `<div class="player">${p.name} - ₹${p.base} - ${p.cat} ${p.sold?"(SOLD)":""}</div>`;
-});
-}
+function nextPlayer() {
+    if(currentSetPlayers.length === 0) startSet();
 
-function updateAuctionList() {
-let select = document.getElementById("auctionPlayer");
-select.innerHTML = "";
-players.forEach((p,i)=>{
-if(!p.sold)
-select.innerHTML += `<option value="${i}">${p.name}</option>`;
-});
+    currentPlayerIndex++;
+
+    if(currentPlayerIndex >= currentSetPlayers.length) {
+        currentSetIndex++;
+        startSet();
+        nextPlayer();
+        return;
+    }
+
+    let p = currentSetPlayers[currentPlayerIndex];
+    let base = (p.year === "FY") ? 1 : 2;
+
+    document.getElementById("currentPlayer").innerHTML =
+        "<h2>" + p.name + "</h2>" +
+        "<p>Role: " + p.role + "</p>" +
+        "<p>Year: " + p.year + "</p>" +
+        "<p>Base Price: " + base + " Cr</p>";
 }
 
 function sellPlayer() {
-let playerIndex = document.getElementById("auctionPlayer").value;
-let bid = parseInt(document.getElementById("bidAmount").value);
-let teamName = document.getElementById("teamSelect").value;
+    let bid = parseFloat(document.getElementById("bidAmount").value);
+    let teamName = document.getElementById("teamSelect").value;
+    let team = teams[teamName];
+    let player = currentSetPlayers[currentPlayerIndex];
 
-let player = players[playerIndex];
-let team = teams[teamName];
+    if(!player) return alert("No player selected!");
+    if(team.purse < bid) return alert("Not enough purse!");
 
-if(player.sold) return alert("Player already sold!");
-if(bid < player.base) return alert("Bid lower than base price!");
-if(team.purse < bid) return alert("Not enough purse!");
-if(team.players.length >= maxPlayers) return alert("Team full!");
+    team.purse -= bid;
+    team.players.push(player.name + " (" + bid + " Cr)");
+    updateTeams();
 
-team.purse -= bid;
-team.players.push(player.name);
-player.sold = true;
-
-updatePlayers();
-updateAuctionList();
-updateTeams();
+    nextPlayer();
 }
 
 function updateTeams() {
-for(let t in teams) {
-let div = document.getElementById(t);
-div.innerHTML = `<h3>${t}</h3>
-<p>Purse Left: ₹${teams[t].purse}</p>
-<p>Players (${teams[t].players.length}/${maxPlayers}):</p>
-${teams[t].players.join("<br>")}`;
-}
-}
-
-updateTeams();
-
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html>
-<head>
-<title>Volleyball Auction System</title>
-<style>
-body { font-family: Arial; background:#111; color:white; text-align:center; }
-.container { display:flex; justify-content:space-around; margin-top:20px; }
-.team { border:2px solid white; padding:10px; width:22%; border-radius:10px; }
-button { padding:5px 10px; margin:5px; cursor:pointer; }
-input, select { padding:5px; margin:5px; }
-.player { border:1px solid gray; margin:5px; padding:5px; }
-</style>
-</head>
-<body>
-
-<h1>🏐 EESA Volleyball Auction</h1>
-
-<h2>Add Player</h2>
-<input id="playerName" placeholder="Player Name">
-<input id="basePrice" type="number" placeholder="Base Price">
-<select id="category">
-<option>Attacker</option>
-<option>Setter</option>
-<option>Libero</option>
-<option>All-Rounder</option>
-</select>
-<button onclick="addPlayer()">Add Player</button>
-
-<h2>Players List</h2>
-<div id="players"></div>
-
-<h2>Auction Panel</h2>
-<select id="auctionPlayer"></select>
-<input id="bidAmount" type="number" placeholder="Bid Amount">
-<select id="teamSelect">
-<option>Team A</option>
-<option>Team B</option>
-<option>Team C</option>
-<option>Team D</option>
-</select>
-<button onclick="sellPlayer()">Sell Player</button>
-
-<h2>Teams</h2>
-<div class="container">
-<div class="team" id="Team A"></div>
-<div class="team" id="Team B"></div>
-<div class="team" id="Team C"></div>
-<div class="team" id="Team D"></div>
-</div>
-
-<script>
-
-let maxPlayers = 8;
-let purseLimit = 20000;
-
-let teams = {
-"Team A": { purse: purseLimit, players: [] },
-"Team B": { purse: purseLimit, players: [] },
-"Team C": { purse: purseLimit, players: [] },
-"Team D": { purse: purseLimit, players: [] }
-};
-
-let players = [];
-
-function addPlayer() {
-let name = document.getElementById("playerName").value;
-let base = parseInt(document.getElementById("basePrice").value);
-let cat = document.getElementById("category").value;
-
-if(!name || !base) return alert("Fill all details");
-
-players.push({ name, base, cat, sold:false });
-updatePlayers();
-updateAuctionList();
-}
-
-function updatePlayers() {
-let div = document.getElementById("players");
-div.innerHTML = "";
-players.forEach(p=>{
-div.innerHTML += `<div class="player">${p.name} - ₹${p.base} - ${p.cat} ${p.sold?"(SOLD)":""}</div>`;
-});
-}
-
-function updateAuctionList() {
-let select = document.getElementById("auctionPlayer");
-select.innerHTML = "";
-players.forEach((p,i)=>{
-if(!p.sold)
-select.innerHTML += `<option value="${i}">${p.name}</option>`;
-});
-}
-
-function sellPlayer() {
-let playerIndex = document.getElementById("auctionPlayer").value;
-let bid = parseInt(document.getElementById("bidAmount").value);
-let teamName = document.getElementById("teamSelect").value;
-
-let player = players[playerIndex];
-let team = teams[teamName];
-
-if(player.sold) return alert("Player already sold!");
-if(bid < player.base) return alert("Bid lower than base price!");
-if(team.purse < bid) return alert("Not enough purse!");
-if(team.players.length >= maxPlayers) return alert("Team full!");
-
-team.purse -= bid;
-team.players.push(player.name);
-player.sold = true;
-
-updatePlayers();
-updateAuctionList();
-updateTeams();
-}
-
-function updateTeams() {
-for(let t in teams) {
-let div = document.getElementById(t);
-div.innerHTML = `<h3>${t}</h3>
-<p>Purse Left: ₹${teams[t].purse}</p>
-<p>Players (${teams[t].players.length}/${maxPlayers}):</p>
-${teams[t].players.join("<br>")}`;
-}
+    for(let t in teams) {
+        document.getElementById(t).innerHTML =
+            "<h3>" + t + "</h3>" +
+            "<p>Purse: " + teams[t].purse.toFixed(1) + " Cr</p>" +
+            teams[t].players.join("<br>");
+    }
 }
 
 updateTeams();
+startSet();
 
 </script>
 
