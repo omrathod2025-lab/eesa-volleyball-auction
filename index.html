@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>EESA Volleyball Auction</title>
+
 <style>
 body {
     font-family: Arial;
@@ -10,9 +11,13 @@ body {
     text-align: center;
 }
 
-h1 { font-size: 40px; }
+h1 {
+    font-size: 40px;
+}
 
-.section { margin: 20px; }
+.section {
+    margin: 20px;
+}
 
 button {
     padding: 10px 20px;
@@ -63,6 +68,7 @@ select, input {
 }
 </style>
 </head>
+
 <body>
 
 <h1>🏐 EESA Volleyball Auction</h1>
@@ -86,6 +92,7 @@ select, input {
 </div>
 
 <h2>Teams</h2>
+
 <div class="container">
     <div class="team" id="Team Ian"></div>
     <div class="team" id="Team Navin"></div>
@@ -104,21 +111,25 @@ let teams = {
     "Team Shailesh": { purse: purseLimit, players: [] }
 };
 
+// 🔥 ADD ALL YOUR PLAYERS HERE
 let players = [
 
-    {
-        name:"Rushikesh Patil",
-        year:"BTECH",
-        role:"Spiker",
-        image:"Rushikesh_Patil_Btech_EE.jpg"
-    },
-
-    {
-        name:"Shrivardhan Deshmukh",
-        year:"TY",
-        role:"Libero",
-        image:"shrivardhan.jpg"
-    }
+    {name:"Rushikesh Patil", year:"BTECH", role:"Spiker"},
+    {name:"Shrivardhan Deshmukh", year:"TY", role:"Libero"},
+    {name:"Pushkar Joshi", year:"FY", role:"Setter"},
+    {name:"MAYUR BADGUJAR", year:"FY", role:"Setter"},
+    {name:"Navne Amar Maharudra", year:"SY", role:"All-Rounder"},
+    {name:"Kevin Pooniwala", year:"TY", role:"Spiker"},
+    {name:"Bhavesh Shah", year:"FY", role:"Libero"},
+    {name:"Daksh Kotak", year:"FY", role:"Libero"},
+    {name:"Sarthak Gawde", year:"SY", role:"Setter"},
+    {name:"Aditya Jadhav", year:"TY", role:"Spiker"},
+    {name:"Ian Dias", year:"TY", role:"Spiker"},
+    {name:"Navinkumar Khanande", year:"SY", role:"Spiker"},
+    {name:"Shailesh Shikarkhane", year:"SY", role:"All-Rounder"},
+    {name:"Advay Saraf", year:"SY", role:"Libero"},
+    {name:"Omkar Majge", year:"TY", role:"All-Rounder"},
+    {name:"Gaurav Yadav", year:"TY", role:"Libero"}
 
 ];
 
@@ -157,8 +168,11 @@ function nextPlayer() {
     let p = currentSetPlayers[currentPlayerIndex];
     let base = (p.year === "FY") ? 1 : 2;
 
+    // 🔥 Automatic image generation
+    let imageFile = p.name.replace(/ /g, "_") + ".jpg";
+
     document.getElementById("currentPlayer").innerHTML =
-        "<img src='images/" + p.image + "' onerror=\"this.src='https://via.placeholder.com/180';\">" +
+        "<img src='images/" + imageFile + "' onerror=\"this.src='https://via.placeholder.com/180';\">" +
         "<h2>" + p.name + "</h2>" +
         "<p>Role: " + p.role + "</p>" +
         "<p>Year: " + p.year + "</p>" +
@@ -173,6 +187,7 @@ function sellPlayer() {
     let player = currentSetPlayers[currentPlayerIndex];
 
     if(!player) return alert("No player selected!");
+    if(!bid) return alert("Enter bid amount!");
     if(team.purse < bid) return alert("Not enough purse!");
 
     team.purse -= bid;
