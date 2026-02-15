@@ -2,105 +2,70 @@
 <html>
 <head>
 <title>EESA Volleyball Auction</title>
-
 <style>
 body {
-    font-family: Arial, sans-serif;
-    background: #0f172a;
-    color: white;
-    text-align: center;
-    margin: 0;
-}
-
-h1 {
-    font-size: 42px;
-    margin-top: 20px;
-}
-
-.set-display {
-    font-size: 22px;
-    color: #38bdf8;
-    margin-bottom: 10px;
-}
-
-.player-card {
-    background: #1e293b;
-    width: 420px;
-    margin: 20px auto;
-    padding: 25px;
-    border-radius: 18px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.4);
-}
-
-.player-card img {
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 15px;
-    margin-bottom: 15px;
-}
-
-.section {
-    margin: 20px;
-}
-
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin: 5px;
-    cursor: pointer;
-    border-radius: 8px;
-    border: none;
-}
-
-button:hover {
-    opacity: 0.9;
-}
-
-input, select {
-    padding: 8px;
-    font-size: 15px;
-    margin: 5px;
+    font-family: Arial;
+    background:#111;
+    color:white;
+    text-align:center;
 }
 
 .container {
-    display: flex;
-    justify-content: space-around;
-    margin: 30px;
+    display:flex;
+    justify-content:space-around;
+    margin-top:20px;
 }
 
 .team {
-    background: #1e293b;
-    width: 23%;
-    padding: 15px;
-    border-radius: 12px;
+    background:#1e1e1e;
+    padding:15px;
+    border-radius:15px;
+    width:22%;
+}
+
+button {
+    padding:10px 20px;
+    margin:5px;
+    border:none;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#nextBtn { background:#2196F3; color:white; }
+#sellBtn { background:#4CAF50; color:white; }
+
+img {
+    width:200px;
+    height:200px;
+    object-fit:cover;
+    border-radius:15px;
+    margin-bottom:15px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🏐 EESA Volleyball Auction</h1>
+<h1>EESA Volleyball Auction</h1>
+<h2 id="setTitle"></h2>
 
-<div class="set-display" id="setName"></div>
+<div id="playerCard"></div>
 
-<div class="player-card" id="currentPlayer">
-    Click Next Player to Start
-</div>
+<br>
 
-<div class="section">
-    <button onclick="nextPlayer()">Next Player</button><br>
-    <input type="number" id="bidAmount" placeholder="Enter Bid (Cr)">
-    <select id="teamSelect">
-        <option>Team Ian</option>
-        <option>Team Navin</option>
-        <option>Team Kevin</option>
-        <option>Team Shailesh</option>
-    </select>
-    <button onclick="sellPlayer()">SOLD</button>
-</div>
+<select id="teamSelect">
+    <option>Team Ian</option>
+    <option>Team Navin</option>
+    <option>Team Kevin</option>
+    <option>Team Shailesh</option>
+</select>
 
-<h2>Teams</h2>
+<input type="number" id="bidAmount" placeholder="Enter Bid (Cr)">
+<br>
+
+<button id="sellBtn" onclick="sellPlayer()">Sell Player</button>
+<button id="nextBtn" onclick="nextPlayer()">Next Player</button>
 
 <div class="container">
     <div class="team" id="Team Ian"></div>
@@ -121,7 +86,6 @@ let teams = {
 };
 
 let players = [
-
     {name:"Aditya Jadhav", year:"TY", role:"Spiker"},
     {name:"Aditya Thakur", year:"FY", role:"Setter"},
     {name:"Advay Saraf", year:"SY", role:"Libero"},
@@ -136,97 +100,98 @@ let players = [
     {name:"Kartik Kendre", year:"SY", role:"Spiker"},
     {name:"Mayur Badgujar", year:"FY", role:"Setter"},
     {name:"Om Jaiswal", year:"BTECH", role:"All-Rounder"}
-
 ];
 
-let sets = ["Libero","Setter","Spiker","All-Rounder"];
-let currentSetIndex = 0;
-let currentPlayerIndex = 0;
-let currentSetPlayers = [];
+let roles = ["Spiker","Setter","Libero","All-Rounder"];
 
-// Initialize first set on first click
-function initializeIfNeeded() {
-    if (currentSetPlayers.length === 0) {
-        loadNextSet();
-    }
+let currentRoleIndex = 0;
+let currentPlayers = [];
+let currentPlayerIndex = 0;
+
+function initAuction(){
+    loadRole();
+    updateTeams();
 }
 
-function loadNextSet() {
-
-    if(currentSetIndex >= sets.length) {
-        document.getElementById("currentPlayer").innerHTML = "<h2>Auction Completed</h2>";
-        return false;
+function loadRole(){
+    if(currentRoleIndex >= roles.length){
+        document.getElementById("playerCard").innerHTML = "<h2>Auction Completed</h2>";
+        document.getElementById("setTitle").innerText = "";
+        return;
     }
 
-    let role = sets[currentSetIndex];
-    document.getElementById("setName").innerHTML = "Current Set: " + role;
+    let role = roles[currentRoleIndex];
+    document.getElementById("setTitle").innerText = "Current Set: " + role;
 
-    currentSetPlayers = players.filter(p => p.role === role);
+    currentPlayers = players.filter(p => p.role === role);
     currentPlayerIndex = 0;
 
-    if(currentSetPlayers.length === 0) {
-        currentSetIndex++;
-        return loadNextSet();
+    if(currentPlayers.length === 0){
+        currentRoleIndex++;
+        loadRole();
+    } else {
+        showPlayer();
     }
-
-    return true;
 }
 
-function showPlayer() {
+function showPlayer(){
 
-    if(currentSetIndex >= sets.length) return;
+    if(currentPlayerIndex >= currentPlayers.length){
+        currentRoleIndex++;
+        loadRole();
+        return;
+    }
 
-    let p = currentSetPlayers[currentPlayerIndex];
+    let p = currentPlayers[currentPlayerIndex];
     let base = (p.year === "FY") ? 1 : 2;
-    let imageFile = p.name.replace(/ /g, "_") + ".jpg";
+    let imgName = p.name.replace(/ /g,"_") + ".jpg";
 
-    document.getElementById("currentPlayer").innerHTML =
-        "<img src='images/" + imageFile + "' onerror=\"this.src='https://via.placeholder.com/200';\">" +
+    document.getElementById("playerCard").innerHTML =
+        "<img src='images/" + imgName + "' onerror=\"this.src='https://via.placeholder.com/200';\">" +
         "<h2>" + p.name + "</h2>" +
         "<p><b>Role:</b> " + p.role + "</p>" +
         "<p><b>Year:</b> " + p.year + "</p>" +
         "<p><b>Base Price:</b> " + base + " Cr</p>";
 }
 
-function nextPlayer() {
-
-    initializeIfNeeded();
+function nextPlayer(){
+    currentPlayerIndex++;
     showPlayer();
 }
 
-function sellPlayer() {
+function sellPlayer(){
 
     let bid = parseFloat(document.getElementById("bidAmount").value);
     let teamName = document.getElementById("teamSelect").value;
     let team = teams[teamName];
-    let player = currentSetPlayers[currentPlayerIndex];
 
-    if(!player) return alert("No player selected!");
-    if(!bid) return alert("Enter bid amount!");
-    if(team.purse < bid) return alert("Not enough purse!");
+    if(currentPlayerIndex >= currentPlayers.length){
+        alert("No player left in this set!");
+        return;
+    }
+
+    if(!bid){
+        alert("Enter bid amount!");
+        return;
+    }
+
+    if(team.purse < bid){
+        alert("Not enough purse!");
+        return;
+    }
+
+    let player = currentPlayers[currentPlayerIndex];
 
     team.purse -= bid;
     team.players.push(player.name + " (" + bid + " Cr)");
     updateTeams();
 
     currentPlayerIndex++;
-
-    if(currentPlayerIndex >= currentSetPlayers.length) {
-        currentSetIndex++;
-        currentSetPlayers = [];
-    }
-
-    showNextAutomatically();
+    showPlayer();
 }
 
-function showNextAutomatically() {
-    if(loadNextSet()) {
-        showPlayer();
-    }
-}
-
-function updateTeams() {
-    for(let t in teams) {
+function updateTeams(){
+    for(let t in teams){
         document.getElementById(t).innerHTML =
             "<h3>" + t + "</h3>" +
             "<p>Purse: " + teams[t].purse.toFixed(1) + " Cr</p>" +
@@ -234,7 +199,7 @@ function updateTeams() {
     }
 }
 
-updateTeams();
+initAuction();
 
 </script>
 
