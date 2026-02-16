@@ -1,25 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Captain's Dashboard</title>
-<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-<style>
-    body{ font-family: 'Segoe UI', Arial; background: #000; color:white; text-align:center; margin:0; }
-    #setup { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
-    .my-stats { background: #111; border-bottom: 5px solid #00ff88; padding: 15px; position: sticky; top:0; }
-    .purse-box { font-size: 36px; color: #00ff88; font-weight: bold; }
-    #playerCard { margin: 20px auto; width: 320px; background: #1a1a1a; padding: 20px; border-radius: 20px; border: 1px solid #333; }
-    img.p-img { width: 100%; border-radius: 15px; }
-    .banner { font-size: 28px; color: gold; font-weight: bold; min-height: 40px; margin: 10px; }
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; }
-    .team-card { background: #111; padding: 10px; border-radius: 10px; font-size: 13px; border: 1px solid #222; }
-    button { padding: 15px 25px; margin: 8px; font-size: 18px; cursor: pointer; border-radius: 10px; border: none; background: #2196F3; color: white; width: 250px;}
-</style>
+    <title>Captain's View</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        body { font-family: 'Poppins', Arial; background: #000; color:white; text-align:center; margin:0; }
+        #setup { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
+        .my-stats { background: #111; border-bottom: 4px solid #00ff88; padding: 20px; position: sticky; top:0; }
+        .purse-val { font-size: 40px; color: #00ff88; font-weight: bold; }
+        #playerCard { 
+            margin: 20px auto; width: 350px; background: #1a1a1a; padding: 25px; 
+            border-radius: 25px; border: 1px solid #333; transition: 0.5s;
+        }
+        img.p-img { width: 100%; border-radius: 15px; border: 2px solid gold; }
+        .banner { font-size: 30px; color: gold; font-weight: bold; height: 50px; margin: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
+        .team-box { background: #111; padding: 10px; border-radius: 10px; border: 1px solid #222; }
+        button { padding: 15px; margin: 10px; font-size: 18px; cursor: pointer; border-radius: 10px; background: #2196F3; color: white; width: 280px; border:none; }
+        
+        .sold-anim { animation: win 1.5s ease; }
+        @keyframes win { 
+            0% { background: #00ff8855; transform: scale(1); }
+            50% { background: #00ff8888; transform: scale(1.05); }
+            100% { background: #1a1a1a; transform: scale(1); }
+        }
+    </style>
 </head>
 <body>
 
 <div id="setup">
-    <h2 style="color:gold">Select Your Franchise</h2>
+    <h1 style="color:gold">SELECT FRANCHISE</h1>
     <button onclick="join('Zhanzhanit Smashers')">Zhanzhanit Smashers</button>
     <button onclick="join('Vajra Warriors')">Vajra Warriors</button>
     <button onclick="join('Dhasu Spikers')">Dhasu Spikers</button>
@@ -29,13 +39,11 @@
 <div id="mainUI" style="display:none">
     <div class="my-stats">
         <div id="headerLogo"></div>
-        <div class="purse-box" id="myPurse">₹60.0 Cr</div>
-        <div id="playerCount" style="color: #aaa;">Players: 0 / 8 Min</div>
+        <div class="purse-val" id="myPurse">₹60.0 Cr</div>
+        <div id="count">Players: 0 / 8 Min</div>
     </div>
-
     <div class="banner" id="banner"></div>
-    <div id="playerCard"><h3>Waiting for Auctioneer...</h3></div>
-
+    <div id="playerCard"></div>
     <div class="grid" id="others"></div>
 </div>
 
@@ -50,40 +58,34 @@
         document.getElementById("mainUI").style.display = "block";
         conn = peer.connect('eesa-auction-2026');
         conn.on('data', data => updateUI(data));
-        conn.on('close', () => alert("Connection Lost! Refresh."));
     }
 
     function updateUI(data) {
-        // 1. Current Player
         if(data.currentP) {
             let p = data.currentP;
             let img = p.n.replace(/ /g,"_")+".jpg";
             document.getElementById("playerCard").innerHTML = `
-                <img class="p-img" src="images/${img}" onerror="this.src='https://via.placeholder.com/300?text=No+Photo';">
-                <h2 style="margin:10px 0;">${p.n}</h2>
-                <p style="color:gold;">${p.r} | ${p.y}</p>
+                <img class="p-img" src="images/${img}" onerror="this.src='https://via.placeholder.com/300';">
+                <h2>${p.n}</h2><p style="color:gold">${p.r} | ${p.y}</p>
             `;
         }
 
+        if(data.banner.includes("SOLD")) {
+            document.getElementById("playerCard").classList.add("sold-anim");
+            setTimeout(()=> document.getElementById("playerCard").classList.remove("sold-anim"), 1500);
+        }
+
         document.getElementById("banner").innerText = data.banner;
-
-        // 2. My Team Stats
         let me = data.teams[myTeam];
-        document.getElementById("headerLogo").innerHTML = `<img src="${me.logo}" style="height:40px; margin-bottom:5px;"><br><b>${myTeam}</b>`;
+        document.getElementById("headerLogo").innerHTML = `<img src="${me.logo}" height="50"><br><b>${myTeam}</b>`;
         document.getElementById("myPurse").innerText = `₹${me.purse.toFixed(1)} Cr`;
-        let count = me.players.length;
-        document.getElementById("playerCount").innerText = `Players: ${count} / 8 Min`;
-        document.getElementById("playerCount").style.color = count >= 8 ? "#00ff88" : "#ff4444";
+        document.getElementById("count").innerText = `Players: ${me.players.length} / 8 Min`;
+        document.getElementById("count").style.color = me.players.length >= 8 ? "#00ff88" : "#ff4444";
 
-        // 3. Other Teams
         let otherHtml = "";
         for(let t in data.teams) {
             if(t !== myTeam) {
-                otherHtml += `<div class="team-card">
-                    <img src="${data.teams[t].logo}" style="height:25px;"><br>
-                    <b>${t}</b><br>₹${data.teams[t].purse.toFixed(1)} Cr<br>
-                    <small>Players: ${data.teams[t].players.length}</small>
-                </div>`;
+                otherHtml += `<div class="team-box"><img src="${data.teams[t].logo}" height="30"><br><b>${t}</b><br>₹${data.teams[t].purse.toFixed(1)} Cr</div>`;
             }
         }
         document.getElementById("others").innerHTML = otherHtml;
