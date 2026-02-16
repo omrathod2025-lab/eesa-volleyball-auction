@@ -5,53 +5,43 @@
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root { --gold: #ffd700; --sold: #00ff88; --unsold: #ff4444; }
-        body { 
-            font-family: 'Poppins', Arial, sans-serif; 
-            background: radial-gradient(circle, #203a43, #0f2027); 
-            color:white; text-align:center; margin:0; padding-bottom: 50px;
-        }
-        #connStatus { padding:10px; font-size:12px; opacity:0.6; color: var(--sold); }
-        h1 { letter-spacing: 5px; text-transform: uppercase; margin: 20px 0; }
-        
-        /* Glassmorphism Player Card */
-        #playerCard { 
-            margin:20px auto; width:450px; background: rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(15px); padding:30px; border-radius:30px; 
-            border: 2px solid rgba(255, 215, 0, 0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .player-img { width:250px; height:250px; object-fit:cover; border-radius:20px; border: 4px solid var(--gold); }
-
-        /* Animations */
-        .sold-effect { animation: gavelSlam 0.6s ease-in-out; border-color: var(--sold) !important; box-shadow: 0 0 60px var(--sold) !important; }
-        .unsold-effect { filter: grayscale(1); border-color: var(--unsold) !important; box-shadow: 0 0 60px var(--unsold) !important; }
-        @keyframes gavelSlam {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15) rotate(-3deg); }
-            100% { transform: scale(1); }
-        }
-
-        .banner { font-size: 45px; font-weight: 900; height: 60px; text-transform: uppercase; margin: 15px 0; }
-        .container { display:flex; justify-content:center; gap: 15px; padding: 20px; flex-wrap: wrap; }
-        .team { width:220px; background: rgba(0,0,0,0.6); padding:15px; border-radius:15px; border-bottom: 5px solid var(--gold); }
-        .team img { width: 60px; height: 60px; margin-bottom: 10px; }
-
-        .controls { background: rgba(0,0,0,0.4); padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-        button { padding:12px 25px; border-radius:5px; border:none; font-weight:bold; cursor:pointer; text-transform:uppercase; margin: 5px; color: white; }
-        #sellBtn { background: var(--sold); color: black; }
-        #unsoldBtn { background: var(--unsold); }
-        .nav-btn { background: #444; }
-        input, select { padding:12px; border-radius:5px; border:none; font-size: 16px; }
+        body { font-family: 'Poppins', sans-serif; background: radial-gradient(circle, #203a43, #0f2027); color:white; text-align:center; margin:0; display: flex; flex-direction: column; min-height: 100vh; overflow: hidden;}
+        #connStatus { padding:5px; font-size:12px; color: var(--sold); font-weight: bold; }
+        .main-layout { display: flex; flex: 1; padding: 15px; gap: 20px; overflow: hidden; }
+        .auction-side { flex: 3; display: flex; flex-direction: column; align-items: center; }
+        .unsold-side { flex: 1; background: rgba(0,0,0,0.5); border-radius: 20px; border: 1px solid rgba(255,68,68,0.3); padding: 15px; height: 75vh; overflow-y: auto; text-align: left; }
+        #playerCard { width:380px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); padding:20px; border-radius:30px; border: 2px solid rgba(255, 215, 0, 0.3); box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
+        .player-img { width:180px; height:180px; object-fit:cover; border-radius:20px; border: 3px solid var(--gold); }
+        .banner { font-size: 32px; font-weight: 900; height: 40px; text-transform: uppercase; margin: 10px 0; }
+        .container { display:flex; justify-content:center; gap: 10px; margin-top: 15px; flex-wrap: wrap; width: 100%; }
+        .team { width:160px; background: rgba(0,0,0,0.6); padding:8px; border-radius:12px; border-bottom: 4px solid var(--gold); font-size: 11px; }
+        .team img { width: 35px; height: 35px; margin-bottom: 5px; }
+        .controls { background: rgba(0,0,0,0.8); padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
+        button { padding:10px 15px; border-radius:5px; border:none; font-weight:bold; cursor:pointer; margin: 3px; color: white; }
+        #sellBtn { background: var(--sold); color: black; } #unsoldBtn { background: var(--unsold); }
+        input, select { padding:10px; border-radius:5px; border:none; font-size: 14px; margin: 5px; }
     </style>
 </head>
 <body>
 
-<div id="connStatus">Initializing...</div>
-<h1>🏐 EESA VOLLEYBALL AUCTION</h1>
-<h2 id="setTitle" style="color: var(--gold);"></h2>
-
-<div class="banner" id="banner"></div>
-<div id="playerCard"></div>
+<div id="connStatus">Initializing Peer...</div>
+<div class="main-layout">
+    <div class="auction-side">
+        <h1 style="margin:0; letter-spacing:2px;">EESA VOLLEYBALL AUCTION</h1>
+        <h2 id="setTitle" style="color: var(--gold); margin: 5px 0;"></h2>
+        <div class="banner" id="banner"></div>
+        <div id="playerCard"></div>
+        <div class="container">
+            <div class="team" id="Zhanzhanit Smashers"></div>
+            <div class="team" id="Vajra Warriors"></div>
+            <div class="team" id="Dhasu Spikers"></div>
+            <div class="team" id="Elev8"></div>
+        </div>
+    </div>
+    <div class="unsold-side" id="unsoldList">
+        <h3 style="color: var(--unsold); margin-top:0; border-bottom: 1px solid #444;">🚫 UNSOLD</h3>
+    </div>
+</div>
 
 <div class="controls">
     <select id="teamSelect">
@@ -60,27 +50,19 @@
         <option>Dhasu Spikers</option>
         <option>Elev8</option>
     </select>
-    <input type="number" id="bidAmount" placeholder="Bid (Cr)">
-    <button id="sellBtn" onclick="sellPlayer()">Sold</button>
-    <button id="unsoldBtn" onclick="unsoldPlayer()">Unsold</button>
-    <br>
-    <button class="nav-btn" onclick="undoAction()">Undo</button>
-    <button class="nav-btn" onclick="prevPlayer()">Back</button>
-    <button class="nav-btn" onclick="nextPlayer()">Skip</button>
-    <button onclick="resetAuction()" style="background:maroon;">Reset</button>
-</div>
-
-<div class="container">
-    <div class="team" id="Zhanzhanit Smashers"></div>
-    <div class="team" id="Vajra Warriors"></div>
-    <div class="team" id="Dhasu Spikers"></div>
-    <div class="team" id="Elev8"></div>
+    <input type="number" id="bidAmount" step="0.1" placeholder="Bid (Cr)">
+    <button id="sellBtn" onclick="sellPlayer()">SOLD</button>
+    <button id="unsoldBtn" onclick="unsoldPlayer()">UNSOLD</button>
+    <button style="background:#444" onclick="undoAction()">UNDO</button>
+    <button style="background:#2196F3" onclick="nextPlayer()">SKIP</button>
+    <button style="background:maroon" onclick="resetAuction()">RESET</button>
 </div>
 
 <script>
     const peer = new Peer('eesa-auction-2026'); 
     let connections = [];
     let auctionHistory = [];
+    let unsoldPlayers = [];
 
     let teams = {
         "Zhanzhanit Smashers": { purse: 60, players: [], logo: "images/smashers_logo.png.jpeg" },
@@ -89,68 +71,35 @@
         "Elev8": { purse: 60, players: [], logo: "images/Elev8_logo.png.jpeg" }
     };
 
-    let players=[
-        {n:"Shrivardhan Deshmukh",y:"TY",r:"Libero"}, {n:"Pushkar Joshi",y:"FY",r:"Setter"},
-        {n:"Mayur Badgujar",y:"FY",r:"Setter"}, {n:"Navne Amar Maharudra",y:"SY",r:"All-Rounder"},
-        {n:"Swayam Pankaj Kitukale",y:"FY",r:"All-Rounder"}, {n:"Kevin Pooniwala",y:"TY",r:"Spiker"},
-        {n:"Bhavesh Shah",y:"FY",r:"Libero"}, {n:"Daksh Rajesh Kotak",y:"FY",r:"Libero"},
-        {n:"Sarthak Gawde",y:"SY",r:"Setter"}, {n:"Aditya Jadhav",y:"TY",r:"Spiker"},
-        {n:"Sohan Prashant Mestry",y:"FY",r:"All-Rounder"}, {n:"Shyam Bhutnar",y:"SY",r:"All-Rounder"},
-        {n:"Aniket Mhetar",y:"SY",r:"Setter"}, {n:"Muneshwar Pravin Patil",y:"SY",r:"All-Rounder"},
-        {n:"Prathmesh Kadam",y:"TY",r:"All-Rounder"}, {n:"Shailesh Shikarkhane",y:"SY",r:"All-Rounder"},
-        {n:"Adwait Atul Deshpande",y:"FY",r:"All-Rounder"}, {n:"Asit Mangesh Bansode",y:"SY",r:"All-Rounder"},
-        {n:"Stuti Athani",y:"TY",r:"All-Rounder"}, {n:"Aditya Prashant Thakur",y:"FY",r:"Spiker"},
-        {n:"Narendra Prabhakar Khirade",y:"FY",r:"Setter"}, {n:"Harshwardhan Devkule",y:"FY",r:"Libero"},
-        {n:"Arnav Ghatnandrekar",y:"FY",r:"Spiker"}, {n:"Kartik Arote",y:"SY",r:"Libero"},
-        {n:"Kartik Kendre",y:"TY",r:"All-Rounder"}, {n:"Harshvardhan Mahesh Mohite",y:"FY",r:"All-Rounder"},
-        {n:"Ian Dias",y:"TY",r:"Spiker"}, {n:"Guru Patil",y:"TY",r:"Setter"},
-        {n:"Kartik Nilesh Bhure",y:"FY",r:"Setter"}, {n:"Roshan Rambhau Gudge",y:"FY",r:"All-Rounder"},
-        {n:"Navinkumar Khanande",y:"SY",r:"Spiker"}, {n:"Avinash Santosh Bhadange",y:"MTECH",r:"Spiker"},
-        {n:"Vivek Kamble",y:"FY",r:"Spiker"}, {n:"Vedant Vijay Khalokar",y:"FY",r:"Spiker"},
-        {n:"Advay Sachin Saraf",y:"SY",r:"Libero"}, {n:"Nandish Panchal",y:"FY",r:"All-Rounder"},
-        {n:"Vedant Sangewar",y:"FY",r:"Libero"}, {n:"Omkar Shivdarshan Majge",y:"TY",r:"All-Rounder"},
-        {n:"Harshal Chinchore",y:"MTECH",r:"All-Rounder"}, {n:"Abhigyan Mishra",y:"FY",r:"Spiker"},
-        {n:"Darshith Bodkhe",y:"TY",r:"Libero"}, {n:"Viraj Pawar",y:"MTECH",r:"Setter"},
-        {n:"Merudatta",y:"MTECH",r:"Spiker"}, {n:"Sairam Revagade",y:"FY",r:"Libero"},
-        {n:"Aniruddh Nalli",y:"BTECH",r:"Libero"}, {n:"Sanket Patil",y:"MTECH",r:"Spiker"},
-        {n:"Om Mukesh Jaiswal",y:"BTECH",r:"Setter"}, {n:"Rushikesh Kishor Patil",y:"BTECH",r:"All-Rounder"},
-        {n:"Harshwardhan Yashwant Patil",y:"BTECH",r:"Spiker"}, {n:"Branden Colaco",y:"TY",r:"Libero"},
-        {n:"Rahul Chindarkar",y:"TY",r:"All-Rounder"}, {n:"Shravani Gurav",y:"FY",r:"Libero"},
-        {n:"Aditya Shinde",y:"TY",r:"Spiker"}, {n:"Pallavi Parmeshwar Golhar",y:"TY",r:"Setter"},
-        {n:"Siddhen Bhushan Mahajan",y:"TY",r:"Setter"}, {n:"Jai Sheth",y:"FY",r:"Libero"},
-        {n:"Gaurav Yadav",y:"TY",r:"Libero"}, {n:"Yash Chinchwade",y:"TY",r:"Libero"},
-        {n:"Shubham Manohar Chavan",y:"MTECH",r:"All-Rounder"}
+    let players = [
+        {n:"Shrivardhan Deshmukh",y:"TY",r:"Libero"}, {n:"Pushkar Joshi",y:"FY",r:"Setter"}, {n:"MAYUR BADGUJAR",y:"FY",r:"Setter"}, {n:"Navne Amar Maharudra",y:"SY",r:"All-Rounder"}, {n:"Swayam Pankaj Kitukale",y:"FY",r:"All-Rounder"}, {n:"Kevin Pooniwala",y:"TY",r:"Spiker"}, {n:"Bhavesh Shah",y:"FY",r:"Libero"}, {n:"Daksh Rajesh kotak",y:"FY",r:"Libero"}, {n:"Sarthak Gawde",y:"SY",r:"Setter"}, {n:"Aditya Jadhav",y:"TY",r:"Spiker"}, {n:"Sohan Prashant Mestry",y:"FY",r:"All-Rounder"}, {n:"Shyam Bhutnar",y:"SY",r:"All-Rounder"}, {n:"Aniket Mhetar",y:"SY",r:"Setter"}, {n:"Muneshwar Pravin Patil",y:"SY",r:"All-Rounder"}, {n:"Prathmesh Kadam",y:"TY",r:"All-Rounder"}, {n:"Shailesh Shikarkhane",y:"SY",r:"All-Rounder"}, {n:"Adwait Atul Deshpande",y:"FY",r:"All-Rounder"}, {n:"Asit Mangesh Bansode",y:"SY",r:"All-Rounder"}, {n:"Stuti Athani",y:"TY",r:"All-Rounder"}, {n:"Aditya Prashant thakur",y:"FY",r:"Spiker"}, {n:"Narendra Prabhakar Khira",y:"FY",r:"Setter"}, {n:"Harshwardhan Devkule",y:"FY",r:"Libero"}, {n:"Arnav Ghatnandrekar",y:"FY",r:"Spiker"}, {n:"Kartik Arote",y:"SY",r:"Libero"}, {n:"Kartik Kendre",y:"TY",r:"All-Rounder"}, {n:"Harshvardhan Mahesh MI",y:"FY",r:"All-Rounder"}, {n:"Ian Dias",y:"TY",r:"Spiker"}, {n:"Guru Patil",y:"TY",r:"Setter"}, {n:"Kartik Nilesh Bhure",y:"FY",r:"Setter"}, {n:"Roshan Rambhau Gudge",y:"FY",r:"All-Rounder"}, {n:"Navinkumar Khanande",y:"SY",r:"Spiker"}, {n:"Avinash Santosh Bhadang",y:"M.Tech",r:"Spiker"}, {n:"Vivek kamble",y:"FY",r:"Spiker"}, {n:"Vedant Vijay Khalokar",y:"FY",r:"Spiker"}, {n:"Advay Sachin Saraf",y:"SY",r:"Libero"}, {n:"Nandish panchal",y:"FY",r:"All-Rounder"}, {n:"Vedant Sangewar",y:"FY",r:"Libero"}, {n:"Omkar shivdarshan majge",y:"TY",r:"All-Rounder"}, {n:"Harshal Chinchore",y:"M.Tech",r:"All-Rounder"}, {n:"Abhigyan Mishra",y:"FY",r:"Spiker"}, {n:"Darshith Bodkhe",y:"TY",r:"Libero"}, {n:"Viraj Pawar",y:"M.Tech",r:"Setter"}, {n:"Merudatta",y:"M.Tech",r:"Spiker"}, {n:"Sairam Revagade",y:"FY",r:"Libero"}, {n:"Aniruddh Nalli",y:"B.Tech",r:"Libero"}, {n:"Sanket Patil",y:"M.Tech",r:"Spiker"}, {n:"Om Mukesh Jaiswal",y:"B.Tech",r:"Setter"}, {n:"Rushikesh Kishor Patil",y:"B.Tech",r:"All-Rounder"}, {n:"Harshwardhan Yashwant",y:"B.Tech",r:"Spiker"}, {n:"Branden Colaco",y:"TY",r:"Libero"}, {n:"Rahul chindarkar",y:"TY",r:"All-Rounder"}, {n:"SHRAVANI GURAV",y:"FY",r:"Libero"}, {n:"Aditya Shinde",y:"TY",r:"Spiker"}, {n:"Pallavi Parmeshwar Golha",y:"TY",r:"Setter"}, {n:"Siddhen Bhushan Mahaja",y:"TY",r:"Setter"}, {n:"Jai Sheth",y:"FY",r:"Libero"}, {n:"Gaurav Yadav",y:"TY",r:"Libero"}, {n:"Yash Chinchwade",y:"TY",r:"Libero"}, {n:"Shubham Manohar Chava",y:"M.Tech",r:"All-Rounder"}, {n:"Satvik Mandlik",y:"TY",r:"Spiker"}, {n:"Shangan tembhare",y:"SY",r:"Libero"}, {n:"Saarthak Srivastava",y:"FY",r:"Libero"}, {n:"Swayam Jagdale",y:"FY",r:"Libero"}
     ];
 
     let roles=["Spiker","Setter","Libero","All-Rounder"];
     let roleIndex=0; let currentPlayers=[]; let playerIndex=0;
 
-    peer.on('open', id => { document.getElementById('connStatus').innerText = "✅ ONLINE"; });
+    peer.on('open', id => { document.getElementById('connStatus').innerText = "✅ MASTER ONLINE"; });
     peer.on('connection', conn => { connections.push(conn); conn.on('open', () => syncData()); });
 
     function syncData() {
-        let state = { currentP: currentPlayers[playerIndex], teams: teams, banner: document.getElementById("banner").innerText };
+        let state = { currentP: currentPlayers[playerIndex], teams: teams, unsold: unsoldPlayers, banner: document.getElementById("banner").innerText };
         connections.forEach(c => { if(c.open) c.send(state); });
     }
 
     function init(){ loadRole(); updateTeams(); }
-
     function loadRole(){
         if(roleIndex >= roles.length) return;
         currentPlayers = players.filter(p=>p.r===roles[roleIndex]);
-        playerIndex = 0;
-        document.getElementById("setTitle").innerText = roles[roleIndex];
+        playerIndex = 0; document.getElementById("setTitle").innerText = "SET: " + roles[roleIndex];
         showPlayer();
     }
 
     function showPlayer(){
         if(playerIndex >= currentPlayers.length){ roleIndex++; loadRole(); return;}
         let p = currentPlayers[playerIndex];
-        let base = (p.y==="FY")?1:2;
-        let img = p.n.replace(/ /g,"_")+".jpg";
-        document.getElementById("playerCard").innerHTML=
-        `<img class="player-img" src='images/${img}' onerror="this.src='https://via.placeholder.com/250?text=PHOTO';">`+
-        `<h2>${p.n}</h2><p>${p.r} | ${p.y}</p><h3 style="color:var(--gold)">Base: ${base} Cr</h3>`;
+        let base = (p.y==="FY") ? "50 L" : "1 Cr";
+        let img = p.n.replace(/ /g,"_") + ".jpg";
+        document.getElementById("playerCard").innerHTML = `<img class="player-img" src='images/${img}' onerror="this.src='https://via.placeholder.com/200';"><h2>${p.n}</h2><p>${p.r} | ${p.y}</p><h3 style="color:var(--gold)">Base: ${base}</h3>`;
         syncData();
     }
 
@@ -158,56 +107,33 @@
         let bid = parseFloat(document.getElementById("bidAmount").value);
         let teamName = document.getElementById("teamSelect").value;
         if(!bid) return alert("Enter Bid!");
-
-        auctionHistory.push(JSON.parse(JSON.stringify({ teams: teams, playerIndex: playerIndex, roleIndex: roleIndex })));
-        
+        auctionHistory.push(JSON.parse(JSON.stringify({ teams, playerIndex, roleIndex, unsold: unsoldPlayers })));
         teams[teamName].purse -= bid;
-        teams[teamName].players.push(`${currentPlayers[playerIndex].n} (${bid}Cr)`);
-
+        let displayBid = bid < 1 ? (bid * 100).toFixed(0) + " L" : bid.toFixed(2) + " Cr";
+        teams[teamName].players.push(`${currentPlayers[playerIndex].n} (${displayBid})`);
         document.getElementById("banner").innerText = "SOLD TO " + teamName;
         document.getElementById("banner").style.color = "var(--sold)";
-        document.getElementById("playerCard").classList.add("sold-effect");
-
-        updateTeams();
-        syncData();
-
-        setTimeout(() => {
-            document.getElementById("playerCard").classList.remove("sold-effect");
-            document.getElementById("banner").innerText = "";
-            playerIndex++; showPlayer();
-            document.getElementById("bidAmount").value = "";
-        }, 2000);
+        updateTeams(); syncData();
+        setTimeout(() => { document.getElementById("banner").innerText=""; playerIndex++; showPlayer(); document.getElementById("bidAmount").value=""; }, 1500);
     }
 
     function unsoldPlayer() {
+        let p = currentPlayers[playerIndex];
+        unsoldPlayers.push(p.n + " (" + p.r + ")");
         document.getElementById("banner").innerText = "UNSOLD";
         document.getElementById("banner").style.color = "var(--unsold)";
-        document.getElementById("playerCard").classList.add("unsold-effect");
-        syncData();
-        setTimeout(() => {
-            document.getElementById("playerCard").classList.remove("unsold-effect");
-            document.getElementById("banner").innerText = "";
-            playerIndex++; showPlayer();
-        }, 1500);
+        updateUnsoldDisplay(); syncData();
+        setTimeout(() => { document.getElementById("banner").innerText=""; playerIndex++; showPlayer(); }, 1200);
     }
 
-    function undoAction() {
-        if (auctionHistory.length === 0) return;
-        let prev = auctionHistory.pop();
-        teams = prev.teams; playerIndex = prev.playerIndex; roleIndex = prev.roleIndex;
-        updateTeams(); showPlayer();
-    }
-
+    function updateUnsoldDisplay() { document.getElementById("unsoldList").innerHTML = `<h3 style="color: var(--unsold); margin-top:0; border-bottom: 1px solid #444;">🚫 UNSOLD</h3>` + unsoldPlayers.join("<br>"); }
+    function undoAction() { if (auctionHistory.length === 0) return; let prev = auctionHistory.pop(); teams = prev.teams; playerIndex = prev.playerIndex; roleIndex = prev.roleIndex; unsoldPlayers = prev.unsold; updateTeams(); updateUnsoldDisplay(); showPlayer(); }
     function nextPlayer(){ playerIndex++; showPlayer(); }
-    function prevPlayer(){ if(playerIndex > 0) { playerIndex--; showPlayer(); } }
     function resetAuction() { if(confirm("Reset?")) location.reload(); }
 
     function updateTeams(){
         for(let t in teams){
-            document.getElementById(t).innerHTML = 
-            `<img src="${teams[t].logo}" onerror="this.style.display='none'"><br><b>${t}</b><br>` +
-            `Purse: <span style="color:var(--sold)">${teams[t].purse.toFixed(1)} Cr</span><hr style="opacity:0.2">` + 
-            `<small>${teams[t].players.join(", ")}</small>`;
+            document.getElementById(t).innerHTML = `<img src="${teams[t].logo}" onerror="this.style.display='none'"><br><b>${t}</b><br><span style="color:var(--sold)">${teams[t].purse.toFixed(1)} Cr</span>`;
         }
     }
     init();
